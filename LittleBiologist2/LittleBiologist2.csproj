@@ -72,6 +72,9 @@
     <Compile Include="LabelPages\StaticInfoPage.cs" />
     <Compile Include="LabelTools\CreatureGetterCursor.cs" />
     <Compile Include="LabelTools\CreatureInfoGetter.cs" />
+    <Compile Include="LBioExceptions\Exceptions.cs" />
+    <Compile Include="LBioExpand\LBioCustomPage.cs" />
+    <Compile Include="LBioExpand\LBioExpandCore.cs" />
     <Compile Include="LBioHUD.cs" />
     <Compile Include="Plugin.cs" />
   </ItemGroup>

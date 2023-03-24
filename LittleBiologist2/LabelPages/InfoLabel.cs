@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using static LittleBiologist.LBioHUD;
+using LittleBiologist.LBioExpand;
 
 namespace LittleBiologist
 {
@@ -60,8 +61,25 @@ namespace LittleBiologist
 
         public void LoadPages()
         {
-            labelPages.Add(new StaticInfoPage(hud, this, 0));
-            labelPages.Add(new RelationshipPage(hud, this, 1));
+            int nextPage = 0;
+            labelPages.Add(new StaticInfoPage(hud, this, nextPage++));
+            labelPages.Add(new RelationshipPage(hud, this, nextPage++));
+            
+            //CustomSupport
+            if(LBioExpandCore.customPages.Count > 0)
+            {
+                foreach(var customPage in LBioExpandCore.customPages)
+                {
+                    BaseLabelPage newPage = customPage.LoadCustomPage(hud, this, nextPage);
+                    if(newPage == null)
+                    {
+                        Debug.LogException(new NoCustomPageException(customPage));
+                        continue;
+                    }
+                    labelPages.Add(newPage);
+                    nextPage++;
+                }
+            }
         }
 
         public override void InitSprites()
@@ -93,7 +111,7 @@ namespace LittleBiologist
 
         public void KeyDownControl()
         {
-
+            #region getKeys
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 CurrentPage = 0;
@@ -102,6 +120,43 @@ namespace LittleBiologist
             {
                 CurrentPage = 1;
             }
+            else if (Input.GetKeyDown(KeyCode.F3))
+            {
+                CurrentPage = 2;
+            }
+            else if (Input.GetKeyDown(KeyCode.F4))
+            {
+                CurrentPage = 3;
+            }
+            else if (Input.GetKeyDown(KeyCode.F5))
+            {
+                CurrentPage = 4;
+            }
+            else if (Input.GetKeyDown(KeyCode.F6))
+            {
+                CurrentPage = 5;
+            }
+            else if (Input.GetKeyDown(KeyCode.F7))
+            {
+                CurrentPage = 6;
+            }
+            else if (Input.GetKeyDown(KeyCode.F8))
+            {
+                CurrentPage = 7;
+            }
+            else if (Input.GetKeyDown(KeyCode.F9))
+            {
+                CurrentPage = 8;
+            }
+            else if (Input.GetKeyDown(KeyCode.F10))
+            {
+                CurrentPage = 9;
+            }
+            else if (Input.GetKeyDown(KeyCode.F11))
+            {
+                CurrentPage = 10;
+            }
+            #endregion
         }
 
         public override void Destroy()

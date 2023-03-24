@@ -20,9 +20,9 @@ namespace LittleBiologist
             localPos = new Vector2(0f, -VerticalPageGap);
         }
 
-        public override void LoadPageModules()
+        public override void LoadPagGraphics()
         {
-            base.LoadPageModules();
+            base.LoadPagGraphics();
 
             for (int i = 0; i < CreatureInfoGetter.dynamicFloatInfos.Count; i++)
             {

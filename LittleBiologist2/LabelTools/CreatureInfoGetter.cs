@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using MonoMod.RuntimeDetour;
+using LittleBiologist.LBioExpand;
 
 namespace LittleBiologist
 {
@@ -22,9 +23,14 @@ namespace LittleBiologist
 
         bool last_DynamicInfoValid = true;
         public bool dynamicInfoValid = true;
+
         public List<DynamicFloatInfo> dynamicFloatInfos = new List<DynamicFloatInfo>();
 
-        public IUseRelationShipInfoGetter relationShipInfoGetter = new IUseRelationShipInfoGetter();
+        //customs
+        public List<DynamicInfoGetter> customInfoGetter = new List<DynamicInfoGetter>();
+        public List<DynamicFloatInfo> customFloatInfos = new List<DynamicFloatInfo>();
+
+        public IUseRelationShipInfoGetter relationShipInfoGetter;
 
         static CreatureInfoGetter()
         {
@@ -39,19 +45,33 @@ namespace LittleBiologist
             };
         }
 
+        public CreatureInfoGetter()
+        {
+            AddDynamicGetters();
+        }
+
         public void SetTarget(Creature creature)
         {
             Plugin.Log("Clear Infos");
             PersonalityInfo.Clear();
             ScavSkillInfo.Clear();
             dynamicFloatInfos.Clear();
+            customFloatInfos.Clear();
 
             if (creature == null) return;
             target = creature.abstractCreature;
+
+
             relationShipInfoGetter.SetTarget(creature);
+            if (customInfoGetter.Count > 0)
+            {
+                foreach (var hook in customInfoGetter)
+                {
+                    hook.SetTarget(creature);
+                }
+            }
 
             Plugin.Log("Label start getting info for : " + creature.ToString());
-
             GetStaticInfo();
             InitDynamicInfo();
 
@@ -71,6 +91,28 @@ namespace LittleBiologist
                 dynamicFloatInfos.Add(new DynamicFloatInfo("Fear", GetRelationshipFear));
                 dynamicFloatInfos.Add(new DynamicFloatInfo("TempFear", GetRelationshipTempFear));
                 dynamicFloatInfos.Add(new DynamicFloatInfo("Know", GetRelationshipKnow));
+            }
+
+            if(LBioExpandCore.customPages.Count > 0)
+            {
+                foreach (var customPage in LBioExpandCore.customPages)
+                {
+                    customPage.dynamicFloatInfos.Clear();
+                    customPage.InitDynamicInfos(this);
+                }
+            }
+        }
+
+        public void AddDynamicGetters()
+        {
+            relationShipInfoGetter = new IUseRelationShipInfoGetter();
+
+            if (LBioExpandCore.customPages.Count > 0)
+            {
+                foreach (var customPage in LBioExpandCore.customPages)
+                {
+                    customPage.AddDynamicGetters(this);
+                }
             }
         }
 
@@ -93,6 +135,13 @@ namespace LittleBiologist
                 foreach (var dynamicInfo in dynamicFloatInfos)
                 {
                     dynamicInfo.UpdateInfo(target);
+                }
+                if(customFloatInfos.Count > 0)
+                {
+                    foreach(var customFloatInfo in customFloatInfos)
+                    {
+                        customFloatInfo.UpdateInfo(target);
+                    }
                 }
             }
             catch (Exception e)

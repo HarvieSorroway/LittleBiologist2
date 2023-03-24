@@ -73,6 +73,9 @@ namespace LittleBiologist
         }
     }
 
+    /// <summary>
+    /// HUD渲染的基础单位
+    /// </summary>
     public class LBioHUDGraphics
     {
         public LBioHUD hud;
@@ -85,10 +88,15 @@ namespace LittleBiologist
         public bool isVisible;
         public bool isDestroy = false;
 
+        /// <summary>
+        /// 本地透明度
+        /// </summary>
         public float alpha = 1f;
 
+        /// <summary>
+        ///本地坐标
+        /// </summary>
         public Vector2 localPos;
-
 
         public virtual float EffectiveWidth => 50f;
         public virtual float EffectiveHeight => 20f;
@@ -98,23 +106,35 @@ namespace LittleBiologist
             get; protected set;
         }
 
+        /// <summary>
+        /// 基于父子关系的基坐标
+        /// </summary>
         public Vector2 AnchorPos
         {
             get => parentGraphics == null ? localPos : localPos + parentGraphics.AnchorPos;
             set => localPos = value - (parentGraphics == null ? Vector2.zero : parentGraphics.AnchorPos);
         }
 
+        /// <summary>
+        /// 基于父子关系的透明度
+        /// </summary>
         public float Alpha
         {
             get => parentGraphics == null ? alpha : alpha * parentGraphics.Alpha;
             set => alpha = value;
         }
 
+        /// <summary>
+        /// 该HUDGraphics是否可见，基于父子关系
+        /// </summary>
         public bool IsVisible
         {
             get => parentGraphics == null ? isVisible : isVisible & parentGraphics.IsVisible;
         }
 
+        /// <summary>
+        /// 该HUDGraphics是否应当进行更新和渲染
+        /// </summary>
         public bool ShouldDrawOrUpdate
         {
             get => initiated && IsVisible && !isDestroy;
@@ -122,6 +142,12 @@ namespace LittleBiologist
 
         public bool IsSubGraphic => parentGraphics != null;
 
+        /// <summary>
+        /// 注意，如果parent不为null，则InitSprites方法会跟随parent调用。如果初始化在parent之后，请手动调用InitSprites
+        /// isVisble默认为false
+        /// </summary>
+        /// <param name="hud"></param>
+        /// <param name="parent"></param>
         public LBioHUDGraphics(LBioHUD hud, LBioHUDGraphics parent = null)
         {
             this.hud = hud;
@@ -169,6 +195,9 @@ namespace LittleBiologist
             if (!ShouldDrawOrUpdate) return;
         }
 
+        /// <summary>
+        /// 更新所有节点的可见信息，基于该HUDGraphics的IsVisible信息，如果你有特殊的需求，请重写该方法。
+        /// </summary>
         public virtual void UpdateVisibility()
         {
             if (fnodes.Count > 0 && fnodes[0].isVisible == !IsVisible)

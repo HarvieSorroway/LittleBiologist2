@@ -7,17 +7,30 @@ using static LittleBiologist.LBioHUD;
 
 namespace LittleBiologist
 {
+    /// <summary>
+    /// 信息标签的页面类，具体示例可以参考StaticInfoPage和RelationShipLabelPage
+    /// </summary>
     public class BaseLabelPage : LBioHUDGraphics
     {
+        /// <summary>
+        /// 竖向间隙，用于控制两行文本的间距
+        /// </summary>
         public float VerticalGap => 5f;
-        public float VerticalPageGap => 20f;
+        public float VerticalPageGap => 20f;//焯，忘记做什么用的了
 
         public readonly int thisPageIndex = 0;
         public int currentSubPageIndex = 0;
 
         public InfoLabel infoLabel;
 
+        /// <summary>
+        /// 子页面的HUDGraphics，与子页面的序号对应
+        /// </summary>
         public Dictionary<int, List<LBioHUDGraphics>> subPageGraphics = new Dictionary<int, List<LBioHUDGraphics>>();
+       
+        /// <summary>
+        /// 子页面的FNodes，与子页面的序号对应
+        /// </summary>
         public Dictionary<int, List<FNode>> subPageFNodes = new Dictionary<int, List<FNode>>();
 
         public CreatureInfoGetter CreatureInfoGetter
@@ -25,16 +38,23 @@ namespace LittleBiologist
             get => infoLabel.creatureInfoGetter;
         }
 
+        /// <summary>
+        /// 子页面的数量，如果你有大于一页的需求，重写该属性
+        /// </summary>
         public virtual int SubPageLength => 1;
 
         public BaseLabelPage(LBioHUD hud, InfoLabel infoLabel, int pageIndex) : base(hud, infoLabel)
         {
             thisPageIndex = pageIndex;
             this.infoLabel = infoLabel;
-            LoadPageModules();
+            LoadPagGraphics();
         }
 
-        public virtual void LoadPageModules()
+        /// <summary>
+        /// 加载子页面的所有HUDGraohics。
+        /// 重写方法请先调用基方法，保证字典正确的初始化
+        /// </summary>
+        public virtual void LoadPagGraphics()
         {
             for (int i = 0; i < SubPageLength; i++)
             {
@@ -56,12 +76,19 @@ namespace LittleBiologist
             base.InitSprites();
         }
 
+        /// <summary>
+        /// 轮换子页面的方法
+        /// </summary>
         public void AlternateSubPage()
         {
             currentSubPageIndex++;
             if (currentSubPageIndex >= SubPageLength) currentSubPageIndex = 0;
         }
 
+        /// <summary>
+        /// 切换主页面的方法
+        /// </summary>
+        /// <param name="currentPageIndex"></param>
         public void AlternateMainPage(int currentPageIndex)
         {
             if (currentPageIndex == thisPageIndex)

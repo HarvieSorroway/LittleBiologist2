@@ -10,6 +10,7 @@ using System.Reflection;
 using RWCustom;
 using System.IO;
 using System.Text.RegularExpressions;
+using LittleBiologist.LBioExpand;
 
 namespace LittleBiologist
 {
@@ -55,6 +56,8 @@ namespace LittleBiologist
         {
             orig.Invoke(self);
             Init();
+
+            LBioExpandCore.RegistPage(new TestCustomPage());
         }
 
         public void Init()//初始化函数
@@ -253,6 +256,14 @@ namespace LittleBiologist
                     }
                 }
             }
+        }
+    }
+
+    public class TestCustomPage : LBioCustomPage
+    {
+        public override BaseLabelPage LoadCustomPage(LBioHUD hud, InfoLabel infoLabel, int pageIndex)
+        {
+            return new StaticInfoPage(hud, infoLabel, pageIndex);   
         }
     }
 }
