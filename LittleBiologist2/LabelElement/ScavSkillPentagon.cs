@@ -33,7 +33,7 @@ namespace LittleBiologist
         public float lastValueAlpha;
         public float PentagonAngle => Mathf.PI * 2f / 5f;
 
-        bool forceRevalValues = false;
+        public bool sideFeatureUpdating = false;
 
         public ScavSkillPentagon(LBioHUD part, LBioHUDGraphics forwardModule, string[] abilityName, float[] abilityValue, Color color, float rad = 50f) : base(part, forwardModule)
         {
@@ -147,8 +147,7 @@ namespace LittleBiologist
             if (!ShouldDrawOrUpdate) return;
             if (!IsVisible) return;
 
-            forceRevalValues = Input.GetMouseButton(1);
-            targetValueAlpha = forceRevalValues ? 1f : 0f;
+            targetValueAlpha = sideFeatureUpdating ? 1f : 0f;
 
             if (smoothValueAlpha == targetValueAlpha) return;
 
@@ -161,6 +160,11 @@ namespace LittleBiologist
 
             smoothValueAlpha = Mathf.Lerp(lastValueAlpha, targetValueAlpha, 0.15f);
             lastValueAlpha = smoothValueAlpha;
+        }
+
+        public override void SideFeatureUpdate(bool isMouseButtonRightHolding)
+        {
+            sideFeatureUpdating = isMouseButtonRightHolding;
         }
     }
 

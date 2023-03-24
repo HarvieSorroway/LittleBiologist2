@@ -19,6 +19,7 @@ namespace LittleBiologist
         public LBioLabelCanvas canvas;
         public CreatureGetterCursor cursor;
         public InfoLabel infoLabel;
+        public InputModule inputModule;
 
         public List<LBioHUDGraphics> updateGraphics = new List<LBioHUDGraphics>();
 
@@ -26,9 +27,10 @@ namespace LittleBiologist
         public LBioHUD(HUD.HUD hud, RoomCamera cam) : base(hud)
         {
             hud_instance = this;
+            inputModule = new InputModule();
             this.cam = cam;
-            canvas = new LBioLabelCanvas(this);
 
+            canvas = new LBioLabelCanvas(this);           
             cursor = new CreatureGetterCursor(this,canvas);
             infoLabel = new InfoLabel(this,canvas);
 
@@ -40,6 +42,7 @@ namespace LittleBiologist
         {
             try
             {
+                inputModule.Update();
                 for (int i = updateGraphics.Count - 1; i >= 0; i--)//对所有模块进行逻辑更新
                 {
                     updateGraphics[i].Update();
@@ -87,6 +90,9 @@ namespace LittleBiologist
 
         public bool isVisible;
         public bool isDestroy = false;
+
+        public readonly bool acceptInputControl = true;
+        public readonly int inputControlPiority = -1;
 
         /// <summary>
         /// 本地透明度
@@ -148,13 +154,18 @@ namespace LittleBiologist
         /// </summary>
         /// <param name="hud"></param>
         /// <param name="parent"></param>
-        public LBioHUDGraphics(LBioHUD hud, LBioHUDGraphics parent = null)
+        public LBioHUDGraphics(LBioHUD hud, LBioHUDGraphics parent = null, bool acceptInputControl = true)
         {
             this.hud = hud;
+            this.acceptInputControl = acceptInputControl;
             parentGraphics = parent;
 
             if (parent != null && !parent.subGraphics.Contains(this)) parent.subGraphics.Add(this);
             this.hud.updateGraphics.Add(this);
+
+            if (acceptInputControl) inputControlPiority = (parent == null ? 0 :(parent.acceptInputControl ? parent.inputControlPiority + 1 : 0));
+
+            hud.inputModule.AddToLayer(this);
         }
 
         public virtual void InitSprites()
@@ -241,6 +252,26 @@ namespace LittleBiologist
             }
             fnodes.Clear();
         }
+
+        #region InputControls
+        public virtual bool IsMouseOverMe(Vector2 mousePos,bool higherPiorityAlreadyOver)
+        {
+            return false;
+        }
+
+        public virtual void ClickOnMe(int mouseButton)
+        {
+        }
+
+        public virtual void DragUpdate(Vector2 startDragPos,Vector2 currentDragPos)
+        {
+        }
+
+        public virtual void SideFeatureUpdate(bool isMouseButtonRightHolding)
+        {
+
+        }
+        #endregion
     }
 
     //便于统一调控透明度
@@ -252,7 +283,7 @@ namespace LittleBiologist
 
         public bool hidden = false;//是否隐藏光标
 
-        public LBioLabelCanvas(LBioHUD hud) : base(hud)
+        public LBioLabelCanvas(LBioHUD hud) : base(hud,null,false)
         {
             Plugin.instance.mouseEventTrigger += MouseInputControl;
             isVisible = true;

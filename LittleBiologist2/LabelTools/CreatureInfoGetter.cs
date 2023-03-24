@@ -414,7 +414,6 @@ namespace LittleBiologist
                 this
                 );
 
-
             hooks.Add(dynamicRelationShipHook);
             Plugin.Log("Hook On for " + creature.ToString());
         }

@@ -40,6 +40,9 @@ namespace LittleBiologist
             }
         }
 
+        public bool isMouseOverMe = false;
+        public bool sideFeatureUpdating = false;
+
         public float width;
         public Color color;
 
@@ -144,14 +147,24 @@ namespace LittleBiologist
             base.Update();
             if (!ShouldDrawOrUpdate) return;
 
-            Vector2 mouseLocalPos = background.GetLocalMousePosition();
-            bool revalValueLabel = mouseLocalPos.x < 1 && mouseLocalPos.x > 0 && mouseLocalPos.y < 0 && mouseLocalPos.y > -1;//y 在-1到0之间是实测结果，具体为什么我也不知道.jpg
-
-            targetValueAlpha = revalValueLabel ? 1f : 0f;
+            targetValueAlpha = (isMouseOverMe | sideFeatureUpdating) ? 1f : 0f;
             smoothValueAlpha = Mathf.Lerp(lastValueAlpha, targetValueAlpha, 0.15f);
             lastValueAlpha = smoothValueAlpha;
 
-            forceRevalProgress = Mathf.Lerp(forceRevalProgress, Input.GetMouseButton(1) ? 1f : 0f, 0.15f);
+            forceRevalProgress = Mathf.Lerp(forceRevalProgress, sideFeatureUpdating ? 1f : 0f, 0.15f);
+        }
+
+        public override bool IsMouseOverMe(Vector2 mousePos,bool higherPiorityAlreadyOver)
+        {
+            if (!ShouldDrawOrUpdate) return false;
+            bool result = background.IsMouseOverMe();
+            isMouseOverMe = result;
+            return result;
+        }
+
+        public override void SideFeatureUpdate(bool isMouseButtonRightHolding)
+        {
+            sideFeatureUpdating = isMouseButtonRightHolding;
         }
     }
 }

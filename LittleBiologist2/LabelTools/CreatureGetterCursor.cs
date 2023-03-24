@@ -30,6 +30,10 @@ namespace LittleBiologist
         public float smoothRotate;
         public float lastRotate;
 
+        public float targetAlpha;
+        public float smoothAlpha;
+        public float lastAlpha;
+
         public bool foundTarget = false;//选取框是否查找到目标
         public bool hidden = false;//是否隐藏光标
 
@@ -51,7 +55,7 @@ namespace LittleBiologist
 
 
             //delegate on
-            Plugin.instance.mouseEventTrigger += MouseInputControl;
+            hud.inputModule.onClickDelegate += MouseInputControl;
 
             isVisible = true;
             alpha = 1f;
@@ -142,7 +146,7 @@ namespace LittleBiologist
         public override void Destroy()
         {
             hud.cursor = null;
-            Plugin.instance.mouseEventTrigger -= MouseInputControl;
+            hud.inputModule.onClickDelegate -= MouseInputControl;
             base.Destroy();
         }
 
@@ -161,12 +165,15 @@ namespace LittleBiologist
             smoothRotate = Mathf.Lerp(lastRotate, targetRotate, 0.2f);
             lastRotate = smoothRotate;
 
+            smoothAlpha = Mathf.Lerp(lastAlpha, targetAlpha, 0.2f);
+            lastAlpha = smoothAlpha;
+            alpha = smoothAlpha;
+
             testSquare.SetPosition(AnchorPos.x, AnchorPos.y);
             testSquare.scale = smoothScale;
             testSquare.rotation = smoothRotate;
 
             testSquare.alpha = Alpha;
-            //owner.infoLabel.localAlpha = smoothAlpha;
 
             foundTarget = false;
         }
@@ -187,6 +194,13 @@ namespace LittleBiologist
             {
                 hud.infoLabel.FocusCreature = null;
             }
+        }
+
+        public override bool IsMouseOverMe(Vector2 mousePos, bool higherPiorityAlreadyOver)
+        {
+            if (!ShouldDrawOrUpdate) return false;
+            targetAlpha = higherPiorityAlreadyOver ? 0f : 1f;
+            return false;
         }
     }
 }

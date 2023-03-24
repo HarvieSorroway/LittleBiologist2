@@ -32,9 +32,6 @@ namespace LittleBiologist
         public Dictionary<string, List<TimeLineEvent>> events = new Dictionary<string, List<TimeLineEvent>>();
         public Dictionary<string, float> eventHeights = new Dictionary<string, float>();
 
-        //test function
-        string[] randomTypes = new string[5] { "typeA", "typeB", "typeC", "typeD", "typeE" };
-
         public TimeLine(LBioHUD hud,LBioHUDGraphics parent,float width,float timeSpan,string description,Color axisColor) : base(hud, parent)
         {
             this.width = width;
@@ -116,7 +113,6 @@ namespace LittleBiologist
         }
         public void AddEvent(TimeLineEventInfo eventInfo)
         {
-            detailLabel.SetDisplayInfos(eventInfo);
             AddEvent(eventInfo.type, eventInfo.description, eventInfo.triggerTime,eventInfo.intensity);
         }
 
@@ -221,6 +217,24 @@ namespace LittleBiologist
 
                 if (cof == 0f) TimeLine.RemoveEvent(this);
             }
+
+            public override bool IsMouseOverMe(Vector2 mousePos, bool higherPiorityAlreadyOver)
+            {
+                Vector2 rootPos = AnchorPos + Vector2.up * height;
+                float width = typeLabel.textRect.width;
+                float _height = typeLabel.textRect.height;
+                Vector2 delta = mousePos - rootPos;
+                Plugin.Log(delta.ToString());
+                return delta.x > 0 && delta.x < width && delta.y > 0 && delta.y < _height;
+            }
+
+            public override void ClickOnMe(int mouseButton)
+            {
+                if(mouseButton == 0)
+                {
+                    TimeLine.detailLabel.SetDisplayInfos(type, triggerTime, description);
+                }
+            }
         }
 
         public class TimeLineEventInfo
@@ -300,6 +314,13 @@ namespace LittleBiologist
                 titleLabel.text = "Type : " + timeLineEventInfo.type;
                 timeLabel.text = "Time : " + timeLineEventInfo.triggerTime.ToString();
                 descriptionLabel.text = "Details : " + timeLineEventInfo.description;
+            }
+
+            public void SetDisplayInfos(string type,float time,string description)
+            {
+                titleLabel.text = "Type : " + type;
+                timeLabel.text = "Time : " + time.ToString();
+                descriptionLabel.text = "Details : " + description;
             }
         }
     }

@@ -56,8 +56,6 @@ namespace LittleBiologist
         {
             orig.Invoke(self);
             Init();
-
-            LBioExpandCore.RegistPage(new TestCustomPage());
         }
 
         public void Init()//初始化函数
@@ -110,6 +108,21 @@ namespace LittleBiologist
         public static float ManhattanDist(Vector2 a, Vector2 b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+        }
+
+        public static bool IsMouseOverMe(this FSprite node)
+        {
+            Vector2 anchor = node.GetAnchor();
+            Vector2 localMousePos = node.GetLocalMousePosition();
+
+            return localMousePos.x < (1f - anchor.x) && localMousePos.x > -anchor.x && localMousePos.y < (1f - anchor.y) && localMousePos.y > -anchor.y;
+        }
+        public static bool IsMouseOverMe(this FLabel label)
+        {
+            Vector2 anchor = label.GetAnchor();
+            Vector2 localMousePos = label.GetLocalMousePosition();
+
+            return localMousePos.x < (1f - anchor.x) && localMousePos.x > -anchor.x && localMousePos.y < (1f - anchor.y) && localMousePos.y > -anchor.y;
         }
     }
 
@@ -256,14 +269,6 @@ namespace LittleBiologist
                     }
                 }
             }
-        }
-    }
-
-    public class TestCustomPage : LBioCustomPage
-    {
-        public override BaseLabelPage LoadCustomPage(LBioHUD hud, InfoLabel infoLabel, int pageIndex)
-        {
-            return new StaticInfoPage(hud, infoLabel, pageIndex);   
         }
     }
 }
