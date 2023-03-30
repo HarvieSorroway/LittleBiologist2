@@ -15,6 +15,36 @@ namespace LittleBiologist
         public FLabel testLabel0;
         public FLabel testLabel1;
 
+        public override float EffectiveHeight
+        {
+            get
+            {
+                switch (currentSubPageIndex)
+                {
+                    case 0:
+                        return 30f + subPageGraphics[0].Count * 25f;
+                    case 1:
+                        return subPageGraphics[1].Count > 0 ? 200f : 30f;
+                }
+                return 50f;
+            }
+        }
+
+        public override float EffectiveWidth
+        {
+            get
+            {
+                switch (currentSubPageIndex)
+                {
+                    case 0:
+                        return subPageGraphics[0].Count > 0 ? 120f : 150f;
+                    case 1:
+                        return subPageGraphics[1].Count > 0 ? 300f : 100f;
+                }
+                return 50f;
+            }
+        }
+
         public StaticInfoPage(LBioHUD part, InfoLabel infoLabel, int pageIndex) : base(part, infoLabel, pageIndex)
         {
             localPos = new Vector2(0f, -VerticalPageGap);
@@ -35,7 +65,7 @@ namespace LittleBiologist
             }
             if (subPageGraphics[0].Count == 0)//说明没有获取静态信息
             {
-                var warningLabel = new FLabel(Custom.GetFont(), "I dont use personality");
+                var warningLabel = new FLabel(Custom.GetFont(), "I dont use personality") { anchorX = 0f, anchorY = 1f, scale = 1.1f };
                 subPageFNodes[0].Add(warningLabel);
                 fnodes.Add(warningLabel);
             }
@@ -46,12 +76,12 @@ namespace LittleBiologist
             if (pairs.Length > 0)
             {
                 ScavSkillPentagon scavSkillPentagon = new ScavSkillPentagon(hud, this, pairs, vals, Color.green * 0.5f);
-                scavSkillPentagon.localPos = new Vector2(40, -80f);
+                scavSkillPentagon.localPos = new Vector2(150f, -80f);
                 subPageGraphics[1].Add(scavSkillPentagon);
             }
             else
             {
-                var warningLabel = new FLabel(Custom.GetFont(), "I'm not scav >:");
+                var warningLabel = new FLabel(Custom.GetFont(), "I'm not scav >:") { anchorX = 0f, anchorY = 1f,scale = 1.1f };
                 subPageFNodes[1].Add(warningLabel);
                 fnodes.Add(warningLabel);
             }

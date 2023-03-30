@@ -92,6 +92,7 @@ namespace LittleBiologist
                     var layer = layersAndGraphics[i];
                     foreach (var graphics in layer)
                     {
+                        if (!graphics.ShouldDrawOrUpdate) continue;
                         if (graphics.IsMouseOverMe(currentMousePos, tempPiority != -1) && graphics.inputControlPiority > tempPiority)
                         {
                             tempPiority = graphics.inputControlPiority;
@@ -125,6 +126,7 @@ namespace LittleBiologist
                 var layer = layersAndGraphics[i];
                 foreach (var graphics in layer)
                 {
+                    if (!graphics.ShouldDrawOrUpdate) continue;
                     if (graphics.IsMouseOverMe(currentMousePos, false))
                     {
                         graphics.ClickOnMe(0);

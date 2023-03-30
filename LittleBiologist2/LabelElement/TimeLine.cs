@@ -224,7 +224,6 @@ namespace LittleBiologist
                 float width = typeLabel.textRect.width;
                 float _height = typeLabel.textRect.height;
                 Vector2 delta = mousePos - rootPos;
-                Plugin.Log(delta.ToString());
                 return delta.x > 0 && delta.x < width && delta.y > 0 && delta.y < _height;
             }
 
@@ -298,7 +297,6 @@ namespace LittleBiologist
                 float biasY = 0f;
                 titleLabel.SetPosition(AnchorPos.x, AnchorPos.y);
                 titleLabel.alpha = Alpha;
-                Plugin.Log(titleLabel.GetPosition().ToString());
 
                 biasY = titleLabel.textRect.height + TimeLine.textLineSpan;
                 timeLabel.SetPosition(AnchorPos.x, AnchorPos.y - biasY);

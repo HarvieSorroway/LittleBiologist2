@@ -18,6 +18,7 @@ namespace LittleBiologist
 
         public LBioLabelCanvas canvas;
         public CreatureGetterCursor cursor;
+        public CreaturePointer pointer;
         public InfoLabel infoLabel;
         public InputModule inputModule;
 
@@ -33,6 +34,7 @@ namespace LittleBiologist
             canvas = new LBioLabelCanvas(this);           
             cursor = new CreatureGetterCursor(this,canvas);
             infoLabel = new InfoLabel(this,canvas);
+            pointer = new CreaturePointer(this, canvas);
 
             Plugin.Log("Inited");
             //InitSprites();
@@ -235,9 +237,20 @@ namespace LittleBiologist
             ClearSprites();
             if (subGraphics.Count > 0)
             {
-                foreach (var graphic in subGraphics) graphic.Destroy();
+                for(int i = subGraphics.Count - 1;i >= 0; i--)
+                {
+                    subGraphics[i].Destroy();
+                }
             }
             subGraphics.Clear();
+            if(parentGraphics != null)
+            {
+                parentGraphics.subGraphics.Remove(this);
+            }
+            if(hud.inputModule != null && acceptInputControl)
+            {
+                hud.inputModule.layersAndGraphics[inputControlPiority].Remove(this);
+            }
         }
 
         public virtual void ClearSprites()

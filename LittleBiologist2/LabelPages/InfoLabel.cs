@@ -12,12 +12,21 @@ namespace LittleBiologist
 {
     public class InfoLabel : LBioHUDGraphics
     {
-        public FLabel testLabel = new FLabel(Custom.GetFont(),"");
+        public FLabel testLabel;
         public CreatureInfoGetter creatureInfoGetter = new CreatureInfoGetter();
 
         public List<BaseLabelPage> labelPages = new List<BaseLabelPage>();
 
         Creature _focusCreature = null;
+
+        public FSprite background;
+
+        public Vector2 smoothSize = Vector2.zero;
+        public Vector2 lastSize = Vector2.zero;
+
+        public override float EffectiveHeight => labelPages[CurrentPage].EffectiveHeight;
+        public override float EffectiveWidth => labelPages[CurrentPage].EffectiveWidth;
+
         public Creature FocusCreature
         {
             get => _focusCreature;
@@ -84,21 +93,37 @@ namespace LittleBiologist
 
         public override void InitSprites()
         {
+            background = new FSprite("pixel", true) { shader = hud.hud.rainWorld.Shaders["UniformTexure"], anchorX = 0f, anchorY = 1f };
+            testLabel = new FLabel(Custom.GetFont(), "") { anchorX = 0f, anchorY = 1f };
+
             fnodes.Add(testLabel);
+            fnodes.Add(background);
+
             base.InitSprites();
 
             foreach (var page in labelPages)
             {
                 page.AlternateMainPage(CurrentPage);
             }
+
+            background.MoveToBack();
         }
 
         public override void DrawSprites(float timeStacker)
         {
             base.DrawSprites(timeStacker);
+            if (!ShouldDrawOrUpdate) return;
 
             testLabel.SetPosition(AnchorPos.x, AnchorPos.y);
             testLabel.alpha = Alpha;
+
+            smoothSize = Vector2.Lerp(lastSize, new Vector2(EffectiveWidth, EffectiveHeight) + Vector2.one * 20f, 0.1f);
+            lastSize = smoothSize;
+
+            background.SetPosition(AnchorPos + Vector2.left * 10f + Vector2.up * 10f);
+            background.scaleX = smoothSize.x;
+            background.scaleY = smoothSize.y;
+            background.alpha = Alpha;
         }
 
         public override void Update()

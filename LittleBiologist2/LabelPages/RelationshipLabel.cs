@@ -15,6 +15,37 @@ namespace LittleBiologist
         public FLabel testLabel0;
         public FLabel testLabel1;
 
+        public override float EffectiveHeight
+        {
+            get
+            {
+                switch (currentSubPageIndex)
+                {
+                    case 0:
+                        return subPageFNodes[0].Count > 0 ? subPageFNodes[0].Count * 30f : 30f;
+                    case 1:
+                        return 300f;
+                }
+                return 50f;
+            }
+        }
+
+        public override float EffectiveWidth
+        {
+            get
+            {
+                switch (currentSubPageIndex)
+                {
+                    case 0:
+                        return 150f;
+                    case 1:
+                        return 400f;
+                }
+                return 50f;
+            }
+        }
+
+
         public RelationshipPage(LBioHUD part, InfoLabel infoLabel, int pageIndex) : base(part, infoLabel, pageIndex)
         {
             localPos = new Vector2(0f, -VerticalPageGap);
@@ -26,19 +57,19 @@ namespace LittleBiologist
 
             for (int i = 0; i < CreatureInfoGetter.dynamicFloatInfos.Count; i++)
             {
-                var label = new FLabel(Custom.GetFont(), "");
+                var label = new FLabel(Custom.GetFont(), "") { anchorX = 0f, anchorY = 1f, scale = 1.1f };
 
                 subPageFNodes[0].Add(label);
                 fnodes.Add(label);
             }
             if (CreatureInfoGetter.dynamicFloatInfos.Count == 0)
             {
-                var label = new FLabel(Custom.GetFont(), "I dont have relationships");
+                var label = new FLabel(Custom.GetFont(), "I dont have relationships") { anchorX = 0f,anchorY = 1f, scale = 1.1f };
                 subPageFNodes[0].Add(label);
                 fnodes.Add(label);
             }
 
-            subPageGraphics[1].Add(new RelationShipTrackerTimeLine(hud, this, 400f, Color.yellow) { localPos = new Vector2(0, -60f),});
+            subPageGraphics[1].Add(new RelationShipTrackerTimeLine(hud, this, 400f, Color.yellow) { localPos = new Vector2(0, -120f),});
         }
 
         public override void DrawSprites(float timeStacker)

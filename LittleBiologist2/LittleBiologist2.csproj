@@ -55,6 +55,10 @@
     <Reference Include="UnityEngine">
       <HintPath>E:\Steam\steamapps\common\Rain World\RainWorld_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Desktop\RW&amp;Modding\references1.9\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>E:\Steam\steamapps\common\Rain World\RainWorld_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
@@ -72,7 +76,10 @@
     <Compile Include="LabelPages\StaticInfoPage.cs" />
     <Compile Include="LabelTools\CreatureGetterCursor.cs" />
     <Compile Include="LabelTools\CreatureInfoGetter.cs" />
+    <Compile Include="LabelTools\CreaturePointer.cs" />
     <Compile Include="LabelTools\InputModule.cs" />
+    <Compile Include="LBioEffect\BlurCofSetup.cs" />
+    <Compile Include="LBioEffect\RenderScreenBlur.cs" />
     <Compile Include="LBioExceptions\Exceptions.cs" />
     <Compile Include="LBioExpand\LBioCustomPage.cs" />
     <Compile Include="LBioExpand\LBioExpandCore.cs" />

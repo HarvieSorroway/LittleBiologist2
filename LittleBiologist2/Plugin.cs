@@ -24,15 +24,24 @@ namespace LittleBiologist
 
         public MouseEventTrigger mouseEventTrigger;
         public KeyDownEventTrigger keyDownEventTrigger;
+
+        public Shader uniformtexureshader;
+
         #endregion
         //testFunction
         public bool beastMasterHookOn;
         public bool GetBeastMaster;
 
+        public static bool inited = false;
+
         public void OnEnable()
         {
             On.RainWorld.OnModsInit += RainWorld_OnModsInit;
             instance = this;
+        }
+
+        public void Start()
+        {
         }
 
         public void Update()
@@ -54,17 +63,39 @@ namespace LittleBiologist
 
         private void RainWorld_OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
         {
+
             orig.Invoke(self);
-            Init();
+            Init(self);
         }
 
-        public void Init()//初始化函数
+        public void LoadResources(RainWorld self)
         {
+            string path = AssetManager.ResolveFilePath("LBioAssetBundle/lbiobundle");
+            AssetBundle ab = AssetBundle.LoadFromFile(path);
+
+            //RenderScreenBlur.gaussianBlurShader = ab.LoadAsset<Shader>("assets/myshader/gaussianblur.shader");
+            uniformtexureshader = ab.LoadAsset<Shader>("assets/myshader/uniformtexureshader.shader");
+
+            //Camera camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+            //camera.gameObject.AddComponent<RenderScreenBlur>();
+
+            self.Shaders.Add("UniformTexure", FShader.CreateShader("UniformTexure", uniformtexureshader));
+            BlurCofSetup.SetUp();
+        }
+
+        public void Init(RainWorld self)//初始化函数
+        {
+            if (inited) return;
             On.HUD.HUD.InitSinglePlayerHud += HUD_InitSinglePlayerHud;
             On.HUD.HUD.InitMultiplayerHud += HUD_InitMultiplayerHud;
             On.HUD.HUD.InitSafariHud += HUD_InitSafariHud;
             Log("LittleBiologist Inited");
+
+            LoadResources(self);
+            inited = true;
         }
+
+        
 
         private void HUD_InitSafariHud(On.HUD.HUD.orig_InitSafariHud orig, HUD.HUD self, RoomCamera cam)
         {
@@ -91,7 +122,6 @@ namespace LittleBiologist
         {
             Debug.Log("[LittleBiologist]" + s);
         }
-
 
         #endregion
         public delegate void MouseEventTrigger(int button_id);
@@ -271,4 +301,5 @@ namespace LittleBiologist
             }
         }
     }
+
 }
