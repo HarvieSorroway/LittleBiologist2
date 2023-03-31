@@ -43,7 +43,7 @@ namespace LittleBiologist
         /// </summary>
         public virtual int SubPageLength => 1;
 
-        public BaseLabelPage(LBioHUD hud, InfoLabel infoLabel, int pageIndex) : base(hud, infoLabel)
+        public BaseLabelPage(LBioHUD hud, InfoLabel infoLabel, int pageIndex) : base(hud, infoLabel, true)
         {
             thisPageIndex = pageIndex;
             this.infoLabel = infoLabel;

@@ -156,7 +156,19 @@ namespace LittleBiologist
         /// </summary>
         /// <param name="hud"></param>
         /// <param name="parent"></param>
-        public LBioHUDGraphics(LBioHUD hud, LBioHUDGraphics parent = null, bool acceptInputControl = true)
+        public LBioHUDGraphics(LBioHUD hud) : this(hud,null)
+        {
+        }
+
+        public LBioHUDGraphics(LBioHUD hud, LBioHUDGraphics parent) : this(hud, parent, false)
+        {
+        }
+
+        public LBioHUDGraphics(LBioHUD hud, LBioHUDGraphics parent,bool acceptInputControl) : this(hud, parent, acceptInputControl, -1)
+        {
+        }
+
+        public LBioHUDGraphics(LBioHUD hud, LBioHUDGraphics parent, bool acceptInputControl,int forceInputPiority)
         {
             this.hud = hud;
             this.acceptInputControl = acceptInputControl;
@@ -165,7 +177,12 @@ namespace LittleBiologist
             if (parent != null && !parent.subGraphics.Contains(this)) parent.subGraphics.Add(this);
             this.hud.updateGraphics.Add(this);
 
-            if (acceptInputControl) inputControlPiority = (parent == null ? 0 :(parent.acceptInputControl ? parent.inputControlPiority + 1 : 0));
+            if (acceptInputControl)
+            {
+                if (forceInputPiority == -1) inputControlPiority = (parent == null ? 0 : (parent.acceptInputControl ? parent.inputControlPiority + 1 : 0));
+                else inputControlPiority = forceInputPiority;
+            }
+
 
             hud.inputModule.AddToLayer(this);
         }
@@ -267,6 +284,10 @@ namespace LittleBiologist
         }
 
         #region InputControls
+        public virtual void DragStart()
+        {
+        }
+
         public virtual bool IsMouseOverMe(Vector2 mousePos,bool higherPiorityAlreadyOver)
         {
             return false;

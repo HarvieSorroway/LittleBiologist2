@@ -32,7 +32,7 @@ namespace LittleBiologist
         public Dictionary<string, List<TimeLineEvent>> events = new Dictionary<string, List<TimeLineEvent>>();
         public Dictionary<string, float> eventHeights = new Dictionary<string, float>();
 
-        public TimeLine(LBioHUD hud,LBioHUDGraphics parent,float width,float timeSpan,string description,Color axisColor) : base(hud, parent)
+        public TimeLine(LBioHUD hud,LBioHUDGraphics parent,float width,float timeSpan,string description,Color axisColor) : base(hud, parent, true)
         {
             this.width = width;
             this.timeSpan = timeSpan;
@@ -143,7 +143,7 @@ namespace LittleBiologist
 
             public TimeLine TimeLine => parentGraphics as TimeLine;
 
-            public TimeLineEvent(string type,string description,float time,float height,TimeLine timeline,float intensity) : base(timeline.hud, timeline)
+            public TimeLineEvent(string type,string description,float time,float height,TimeLine timeline,float intensity) : base(timeline.hud, timeline, true)
             {
                 this.type = type;
                 this.triggerTime = time;
@@ -156,7 +156,7 @@ namespace LittleBiologist
                 alpha = 1f;
             }
 
-            public TimeLineEvent(TimeLineEventInfo info,float height,TimeLine timeLine) : base(timeLine.hud, timeLine)
+            public TimeLineEvent(TimeLineEventInfo info,float height,TimeLine timeLine) : base(timeLine.hud, timeLine, true)
             {
                 type = info.type;
                 triggerTime = info.triggerTime;

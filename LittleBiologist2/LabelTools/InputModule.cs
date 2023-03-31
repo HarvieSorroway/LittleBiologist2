@@ -9,6 +9,14 @@ namespace LittleBiologist
 {
     public class InputModule
     {
+        public const int CanvasLayer = -1;
+        public const int InfoLabelLayer = 0;
+        public const int LabelPageIndex = 1;
+        public const int SubPageModuleIndex = 2;
+        public const int SubModuleIndex = 3;
+        public const int HighestLayer = 10;
+
+
         public readonly float clickToDragTimeSpan = 0.2f;
 
         public List<List<LBioHUDGraphics>> layersAndGraphics = new List<List<LBioHUDGraphics>>();
@@ -32,7 +40,8 @@ namespace LittleBiologist
         public void AddToLayer(LBioHUDGraphics graphics)
         {
             if (!graphics.acceptInputControl || graphics.inputControlPiority == -1) return;
-            for(int i = 0;i < graphics.inputControlPiority + 1 - layersAndGraphics.Count; i++)//添加层级
+
+            while(layersAndGraphics.Count < graphics.inputControlPiority + 1)
             {
                 layersAndGraphics.Add(new List<LBioHUDGraphics>());
             }
@@ -81,7 +90,11 @@ namespace LittleBiologist
             }
             if (dragUpdate)
             {
-                if (lastDragUpdate != dragUpdate) mouseDownPos = Input.mousePosition.GetVector2();
+                if (lastDragUpdate != dragUpdate)
+                {
+                    mouseDownPos = Input.mousePosition.GetVector2();
+                    if (dragFocusGraphics != null) dragFocusGraphics.DragStart();
+                }
                 DragUpdate(mouseDownPos, currentMousePos);
             }
             else

@@ -35,7 +35,7 @@ namespace LittleBiologist
 
         public bool sideFeatureUpdating = false;
 
-        public ScavSkillPentagon(LBioHUD part, LBioHUDGraphics forwardModule, string[] abilityName, float[] abilityValue, Color color, float rad = 50f) : base(part, forwardModule)
+        public ScavSkillPentagon(LBioHUD part, LBioHUDGraphics forwardModule, string[] abilityName, float[] abilityValue, Color color, float rad = 50f) : base(part, forwardModule, true)
         {
             this.abilityName = abilityName;
             this.abilityValue = abilityValue;

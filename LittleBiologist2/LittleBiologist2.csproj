@@ -67,6 +67,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LabelElement\ControlHandle.cs" />
     <Compile Include="LabelElement\FloatBar.cs" />
     <Compile Include="LabelElement\ScavSkillPentagon.cs" />
     <Compile Include="LabelElement\TimeLine.cs" />

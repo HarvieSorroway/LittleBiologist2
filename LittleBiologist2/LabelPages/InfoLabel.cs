@@ -14,6 +14,7 @@ namespace LittleBiologist
     {
         public FLabel testLabel;
         public CreatureInfoGetter creatureInfoGetter = new CreatureInfoGetter();
+        public ControlHandle controlHandle;
 
         public List<BaseLabelPage> labelPages = new List<BaseLabelPage>();
 
@@ -59,12 +60,14 @@ namespace LittleBiologist
             }
         }
 
-        public InfoLabel(LBioHUD part, LBioLabelCanvas canvas) : base(part,canvas)
+        public InfoLabel(LBioHUD part, LBioLabelCanvas canvas) : base(part,canvas,true)
         {
             alpha = 1f;
             isVisible = true;
             AnchorPos = new Vector2(100f, Screen.height - 50f);
             Plugin.instance.keyDownEventTrigger += KeyDownControl;
+
+            controlHandle = new ControlHandle(hud, this, Color.cyan * 0.5f + Color.white * 0.5f, Color.yellow * 0.5f + Color.white * 0.5f,2f, 1.5f) { localPos = new Vector2(-5f,5f)};
             LoadPages();
         }
 

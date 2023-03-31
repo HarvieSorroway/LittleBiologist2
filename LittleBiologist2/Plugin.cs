@@ -11,6 +11,13 @@ using RWCustom;
 using System.IO;
 using System.Text.RegularExpressions;
 using LittleBiologist.LBioExpand;
+using System.Security.Permissions;
+
+
+
+#pragma warning disable CS0618
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+#pragma warning restore CS0618
 
 namespace LittleBiologist
 {
@@ -63,7 +70,6 @@ namespace LittleBiologist
 
         private void RainWorld_OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
         {
-
             orig.Invoke(self);
             Init(self);
         }
@@ -94,8 +100,6 @@ namespace LittleBiologist
             LoadResources(self);
             inited = true;
         }
-
-        
 
         private void HUD_InitSafariHud(On.HUD.HUD.orig_InitSafariHud orig, HUD.HUD self, RoomCamera cam)
         {

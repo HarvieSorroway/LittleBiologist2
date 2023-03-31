@@ -63,7 +63,7 @@ namespace LittleBiologist
 
         float forceRevalProgress;
 
-        public FloatBar(LBioHUD part, LBioHUDGraphics forwardModule, Vector2 range, Color color, float width = 50f, string name = "defaultName") : base(part, forwardModule)
+        public FloatBar(LBioHUD part, LBioHUDGraphics forwardModule, Vector2 range, Color color, float width = 50f, string name = "defaultName") : base(part, forwardModule,true)
         {
             this.name = name;
             this.width = width;

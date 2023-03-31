@@ -39,7 +39,7 @@ namespace LittleBiologist
 
         public Creature targetCreature = null;
 
-        public CreatureGetterCursor(LBioHUD hud,LBioLabelCanvas canvas) : base(hud,canvas)
+        public CreatureGetterCursor(LBioHUD hud,LBioLabelCanvas canvas) : base(hud,canvas,true)
         {
             targetPos = Input.mousePosition.GetVector2();
             smoothPos = targetPos;
