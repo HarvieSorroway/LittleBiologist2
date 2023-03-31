@@ -10,7 +10,7 @@ namespace LittleBiologist
 {
     public class RelationshipPage : BaseLabelPage
     {
-        public override int SubPageLength => 2;
+        public override int SubPageLength => 3;
 
         public FLabel testLabel0;
         public FLabel testLabel1;
@@ -24,7 +24,8 @@ namespace LittleBiologist
                     case 0:
                         return subPageFNodes[0].Count > 0 ? subPageFNodes[0].Count * 30f : 30f;
                     case 1:
-                        return 300f;
+                    case 2:
+                        return 350f;
                 }
                 return 50f;
             }
@@ -39,6 +40,7 @@ namespace LittleBiologist
                     case 0:
                         return 150f;
                     case 1:
+                    case 2:
                         return 400f;
                 }
                 return 50f;
@@ -69,7 +71,8 @@ namespace LittleBiologist
                 fnodes.Add(label);
             }
 
-            subPageGraphics[1].Add(new RelationShipTrackerTimeLine(hud, this, 400f, Color.yellow) { localPos = new Vector2(0, -120f),});
+            subPageGraphics[1].Add(new RelationShipTrackerTimeLine(hud, this, 400f, Color.yellow) { localPos = new Vector2(0, -120f)});
+            subPageGraphics[2].Add(new ItemTrackerTimeLine(hud, this, 400f, Color.yellow) { localPos = new Vector2(0, -120f) });
         }
 
         public override void DrawSprites(float timeStacker)

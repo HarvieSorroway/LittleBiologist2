@@ -31,6 +31,7 @@ namespace LittleBiologist
         public List<DynamicFloatInfo> customFloatInfos = new List<DynamicFloatInfo>();
 
         public IUseRelationShipInfoGetter relationShipInfoGetter;
+        public IUseItemTrackerInfoGetter itemTrackerInfoGetter;
 
         static CreatureInfoGetter()
         {
@@ -63,6 +64,8 @@ namespace LittleBiologist
 
 
             relationShipInfoGetter.SetTarget(creature);
+            itemTrackerInfoGetter.SetTarget(creature);
+
             if (customInfoGetter.Count > 0)
             {
                 foreach (var hook in customInfoGetter)
@@ -106,6 +109,7 @@ namespace LittleBiologist
         public void AddDynamicGetters()
         {
             relationShipInfoGetter = new IUseRelationShipInfoGetter();
+            itemTrackerInfoGetter = new IUseItemTrackerInfoGetter();
 
             if (LBioExpandCore.customPages.Count > 0)
             {
@@ -286,9 +290,11 @@ namespace LittleBiologist
 
     public class DynamicInfoGetter
     {
-        List<TimeLine.TimeLineEventInfo> buffer = new List<TimeLine.TimeLineEventInfo>();
+        public List<TimeLine.TimeLineEventInfo> buffer = new List<TimeLine.TimeLineEventInfo>();
         public List<TimeLine.TimeLineEventInfo> allEvents = new List<TimeLine.TimeLineEventInfo>();
         public bool eventsLock = false;
+
+        public string lastType = "";
 
         public WeakReference<Creature> target = new WeakReference<Creature>(null);
         public List<Hook> hooks = new List<Hook>();
@@ -333,9 +339,12 @@ namespace LittleBiologist
 
         public void AddEventInfo(TimeLine.TimeLineEventInfo info,bool forceAdd = false)
         {
+            Plugin.Log(ToString() + "add event " + info.type);
+
             if (info.triggerTime - lastEventInfoTime < minPopEventTimeSpan && !forceAdd) return;
             if (eventsLock) buffer.Add(info);
             else allEvents.Add(info);
+            lastType = info.type;
             lastEventInfoTime = info.triggerTime;
         }
 
@@ -438,6 +447,73 @@ namespace LittleBiologist
             }
 
             return newRelationShip;
+        }
+    }
+
+    public class IUseItemTrackerInfoGetter : DynamicInfoGetter
+    {
+        public static IUseItemTrackerInfoGetter instance;
+        public override float minPopEventTimeSpan => 0.5f;
+        public IUseItemTrackerInfoGetter()
+        {
+            instance = this;
+        }
+
+        public override bool IsTargetEligible(Creature creature)
+        {
+            if (creature.abstractCreature == null) return false;
+            if (creature.abstractCreature.abstractAI == null) return false;
+            if (creature.abstractCreature.abstractAI.RealAI == null) return false;
+            return creature.abstractCreature.abstractAI.RealAI is IUseItemTracker;
+        }
+
+        public override void HookOn(Creature creature)
+        {
+            IUseItemTracker instance = creature.abstractCreature.abstractAI.RealAI as IUseItemTracker;
+
+            Hook trackItemHook = new Hook(
+                instance.GetType().GetMethod("TrackItem", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic),
+                GetType().GetMethod("TrackItemHook", BindingFlags.Instance | BindingFlags.Public),
+                this
+                );
+            hooks.Add(trackItemHook);
+
+            Hook seeThrownWeaponHook = new Hook(
+                instance.GetType().GetMethod("SeeThrownWeapon", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic),
+                GetType().GetMethod("SeeThrownWeaponHook", BindingFlags.Instance | BindingFlags.Public),
+                this
+                );
+            hooks.Add(seeThrownWeaponHook);
+        }
+
+        public bool TrackItemHook(Func<IUseItemTracker, AbstractPhysicalObject,bool> orig, IUseItemTracker self,AbstractPhysicalObject abstractPhysicalObject)
+        {
+            bool result = orig.Invoke(self, abstractPhysicalObject);
+            target.TryGetTarget(out var test);
+
+            if (target.TryGetTarget(out var creature) && creature == (self as ArtificialIntelligence).creature.realizedCreature && result)
+            {
+                string type = "TrackItem";
+                float time = Time.time;
+                string descrption = "Wanna track item : " + abstractPhysicalObject.type.ToString();
+
+                AddEventInfo(new TimeLine.TimeLineEventInfo(type, descrption, time, 0.5f));
+            }
+            return result;
+        }
+
+        public void SeeThrownWeaponHook(Action<IUseItemTracker, PhysicalObject, Creature> orig, IUseItemTracker self, PhysicalObject weapon, Creature thrower)
+        {
+            orig.Invoke(self, weapon, thrower);
+
+            if (target.TryGetTarget(out var creature) && creature == (self as ArtificialIntelligence).creature.realizedCreature && thrower != creature)
+            {
+                string type = "SeeWeapon";
+                float time = Time.time;
+                string descrption = "See " + thrower.ToString() + " throwing " + weapon.ToString();
+
+                AddEventInfo(new TimeLine.TimeLineEventInfo(type, descrption, time, 1f),lastType != type);
+            }
         }
     }
 }

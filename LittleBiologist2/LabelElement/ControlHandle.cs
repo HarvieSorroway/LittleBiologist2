@@ -30,10 +30,6 @@ namespace LittleBiologist
 
         public override void InitSprites()
         {
-            //foreach(var atlas in Futile.atlasManager._allElementsByName.Keys)
-            //{
-            //    Plugin.Log(atlas);
-            //}
             handle = new FSprite("Circle4", true) { color = baseColor};
             fnodes.Add(handle);
             base.InitSprites();

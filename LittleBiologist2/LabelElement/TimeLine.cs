@@ -27,6 +27,7 @@ namespace LittleBiologist
         public FLabel label;
         public FLabel warningLabel;
 
+        public ShowDetailLabel dynamicDetailLabel;
         public ShowDetailLabel detailLabel;
 
         public Dictionary<string, List<TimeLineEvent>> events = new Dictionary<string, List<TimeLineEvent>>();
@@ -40,9 +41,12 @@ namespace LittleBiologist
             this.description = description;
 
             detailLabel = new ShowDetailLabel(hud, this);
-            detailLabel.localPos = new Vector2(0f, -40f);
+            dynamicDetailLabel = new ShowDetailLabel(hud, this);
+            dynamicDetailLabel.localPos = new Vector2(0, -40f);
+            detailLabel.localPos = new Vector2(0f, -140f);
 
             alpha = 1f;
+            isVisible = true;
         }
 
         public override void InitSprites()
@@ -107,12 +111,14 @@ namespace LittleBiologist
                 events.Add(type, new List<TimeLineEvent>());
             }
 
+            dynamicDetailLabel.SetDisplayInfos(type,time,description);
             var newEvent = new TimeLineEvent(type, description, time, eventHeights[type], this, intensity);
             events[type].Add(newEvent);
             newEvent.InitSprites();
         }
         public void AddEvent(TimeLineEventInfo eventInfo)
         {
+            
             AddEvent(eventInfo.type, eventInfo.description, eventInfo.triggerTime,eventInfo.intensity);
         }
 
@@ -141,6 +147,8 @@ namespace LittleBiologist
             public FLabel typeLabel;
             public FSprite line;
 
+            public Color color;
+
             public TimeLine TimeLine => parentGraphics as TimeLine;
 
             public TimeLineEvent(string type,string description,float time,float height,TimeLine timeline,float intensity) : base(timeline.hud, timeline, true)
@@ -150,6 +158,8 @@ namespace LittleBiologist
                 this.description = description;
                 this.height = height;
                 this.intensity = intensity;
+
+                color = Color.Lerp(Color.green, Color.red, intensity);
 
                 loaded = true;
                 isVisible = TimeLine.IsVisible;
@@ -178,7 +188,7 @@ namespace LittleBiologist
                     scaleY = height,
                     scaleX = 2f,
                     isVisible = false,
-                    color = Color.Lerp(Color.green,Color.red,intensity),
+                    color = color,
                 };
                 typeLabel = new FLabel(Custom.GetFont(), type)
                 {
@@ -186,7 +196,7 @@ namespace LittleBiologist
                     anchorY = 0,
                     isVisible = false,
                     rotation = -45f,
-                    color = Color.Lerp(Color.green, Color.red, intensity),
+                    color = color,
                 };
 
                 fnodes.Add(typeLabel);
@@ -220,11 +230,24 @@ namespace LittleBiologist
 
             public override bool IsMouseOverMe(Vector2 mousePos, bool higherPiorityAlreadyOver)
             {
-                Vector2 rootPos = AnchorPos + Vector2.up * height;
-                float width = typeLabel.textRect.width;
-                float _height = typeLabel.textRect.height;
-                Vector2 delta = mousePos - rootPos;
-                return delta.x > 0 && delta.x < width && delta.y > 0 && delta.y < _height;
+                bool result = !higherPiorityAlreadyOver;
+                if (!higherPiorityAlreadyOver)
+                {
+                    Vector2 rootPos = AnchorPos + Vector2.up * height;
+
+                    Vector2 delta = mousePos - rootPos;
+                    float clampX = Vector2.Dot(delta, (Vector2.up + Vector2.right).normalized);
+                    float clampY = Vector2.Dot(delta, (Vector2.up + Vector2.left).normalized);
+
+
+                    float width = typeLabel.textRect.width;
+                    float _height = typeLabel.textRect.height;
+
+                    result = clampX > 0 && clampX < width && clampY > 0 && clampY < _height;
+                }
+                typeLabel.color = result ? Color.white : color;
+
+                return result;
             }
 
             public override void ClickOnMe(int mouseButton)
@@ -325,7 +348,7 @@ namespace LittleBiologist
 
     public class RelationShipTrackerTimeLine : TimeLine
     {
-        public RelationShipTrackerTimeLine(LBioHUD hud, LBioHUDGraphics parent, float width, Color axisColor) : base(hud, parent, width, 10f,"RelationShip and Item events", Color.yellow)
+        public RelationShipTrackerTimeLine(LBioHUD hud, LBioHUDGraphics parent, float width, Color axisColor) : base(hud, parent, width, 15f,"RelationShip events", Color.yellow)
         {
         }
 
@@ -339,6 +362,31 @@ namespace LittleBiologist
             {
                 foreach (var eventInfo in lst)
                 {
+                    AddEvent(eventInfo);
+                }
+            }
+        }
+    }
+
+    public class ItemTrackerTimeLine : TimeLine
+    {
+        public ItemTrackerTimeLine(LBioHUD hud, LBioHUDGraphics parent, float width, Color axisColor) : base(hud, parent, width, 15f, "ItemTracker events", Color.yellow)
+        {
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (!ShouldDrawOrUpdate) return;
+
+            //Plugin.Log(hud.infoLabel.creatureInfoGetter.itemTrackerInfoGetter.allEvents.Count.ToString() + " - " + hud.infoLabel.creatureInfoGetter.itemTrackerInfoGetter.buffer.Count.ToString());
+            var lst = hud.infoLabel.creatureInfoGetter.itemTrackerInfoGetter.PopCurrentEventInfos();
+            
+            if (lst.Count > 0)
+            {
+                foreach (var eventInfo in lst)
+                {
+                    Plugin.Log(eventInfo.description);
                     AddEvent(eventInfo);
                 }
             }
